@@ -122,6 +122,8 @@ public class MainWindow extends JFrame {
 		tabSelectPane.addTab("Calendar", null, calendarPanel, "Go go calendar page");
 		tabSelectPane.addTab("Activities", null, activitiesPanel, "Go go activities page");
 		
+		System.out.println("Commit Test");
+		
 	}
 
 }
