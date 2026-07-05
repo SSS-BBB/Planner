@@ -26,6 +26,10 @@ import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
+import java.time.LocalDate;
+import java.time.Year;
+import java.time.YearMonth;
+
 import javax.swing.JSeparator;
 import java.awt.Color;
 import java.awt.Component;
@@ -128,26 +132,45 @@ public class MainWindow extends JFrame {
 		tabSelectPane = new JTabbedPane(JTabbedPane.TOP);
 		contentPane.add(tabSelectPane);
 		
-		// Calendar
-		final int CALENDAR_SCALE = 2; // make everything bigger, so that the calendar takes more space
-		calendarPanel = new JPanel();
+		createCalendarTab();
 		
 		// Activities
 		activitiesPanel = new JPanel();
-		
+						
 		activitiesLabel = new JLabel("This is activities page");
 		activitiesPanel.add(activitiesLabel);
 		
+		tabSelectPane.addTab("Activities", null, activitiesPanel, "Go go activities page");
+		
+		
+		
+	}
+	
+	private void createCalendarTab()
+	{
+		// Calendar
+		final int CALENDAR_SCALE = 2; // make everything bigger, so that the calendar takes more space
+		
+		String[] monthName = new String[] { 
+				"None", "JAN", "FEB", "MAR", "APR", "MAY", "JUNE", "JULY", "AUG",
+				"SEP", "OCT", "NOV", "DEC", "None"
+		};
+		int currentYear = Year.now().getValue();
+		int currentMonthNum = LocalDate.now().getMonthValue();
+		String currentMonth = monthName[currentMonthNum];
+		
+		calendarPanel = new JPanel();
+				
 		// Tab
 		tabSelectPane.setFont(new Font("Arial", Font.PLAIN, 18));
 		tabSelectPane.addTab("Calendar", null, calendarPanel, "Go go calendar page");
 		calendarPanel.setLayout(new BoxLayout(calendarPanel, BoxLayout.Y_AXIS));
-		
+				
 		// Month Year
 		monthYearPanel = new JPanel();
 		calendarPanel.add(monthYearPanel);
 		monthYearPanel.setLayout(new GridBagLayout());
-		
+				
 		JLabel emptyLabel = new JLabel("0000");
 		emptyLabel.setFont(new Font("Arial", Font.BOLD, 18*CALENDAR_SCALE)); // make it as big as the year, so that we can center the month
 		emptyLabel.setForeground(new Color(0, 0, 0, 0));
@@ -156,145 +179,186 @@ public class MainWindow extends JFrame {
 		gbc_space.weightx = 1;
 		gbc_space.fill = GridBagConstraints.HORIZONTAL;
 		monthYearPanel.add(emptyLabel, gbc_space);
-		
+				
 		monthPanel = new JPanel();
-		
+				
 		prevMonthButton = new JButton("prev");
 		prevMonthButton.setVerticalAlignment(SwingConstants.TOP);
 		prevMonthButton.setFont(new Font("Arial", Font.BOLD, 12*CALENDAR_SCALE));
 		monthPanel.add(prevMonthButton);
-		
-		monthLabel = new JLabel("May");
+				
+		monthLabel = new JLabel(currentMonth);
 		monthLabel.setVerticalAlignment(SwingConstants.TOP);
 		monthLabel.setFont(new Font("Arial", Font.BOLD, 21*CALENDAR_SCALE));
 		monthPanel.add(monthLabel);
-		
+				
 		nextMonthButton = new JButton("next");
 		nextMonthButton.setVerticalAlignment(SwingConstants.TOP);
 		nextMonthButton.setFont(new Font("Arial", Font.BOLD, 12*CALENDAR_SCALE));
 		monthPanel.add(nextMonthButton);
-		
+				
 		GridBagConstraints gbc_monthPanel = new GridBagConstraints();
 		gbc_monthPanel.gridx = 1;
 		gbc_monthPanel.weightx = 0;
 		gbc_monthPanel.fill = GridBagConstraints.NONE;
 		monthYearPanel.add(monthPanel, gbc_monthPanel);
-		
+				
 		yearTextField = new JTextField();
 		yearTextField.setHorizontalAlignment(SwingConstants.TRAILING);
 		yearTextField.setFont(new Font("Arial", Font.BOLD, 18*CALENDAR_SCALE));
-		yearTextField.setText("2026");
+		yearTextField.setText(String.valueOf(currentYear));
 		yearTextField.setOpaque(false);
 		yearTextField.setBorder(null);
 		yearTextField.setColumns(5);
-		
+				
 		GridBagConstraints gbc_yearTextField = new GridBagConstraints();
 		gbc_yearTextField.fill = GridBagConstraints.HORIZONTAL;
 		gbc_yearTextField.anchor = GridBagConstraints.EAST;
 		gbc_yearTextField.gridx = 2;
 		gbc_yearTextField.weightx = 1;
 		monthYearPanel.add(yearTextField, gbc_yearTextField);
-		
+				
 		// Day of Week
 		int dateHGap = 10;
 		int dateVGap = 50;
-		
+				
 		dayOfWeekPanel = new JPanel(new GridLayout(1, 7, dateHGap, dateVGap));
 		calendarPanel.add(dayOfWeekPanel);
-		
+				
 		sunLabel = new JLabel("SUN");
 		sunLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		sunLabel.setFont(new Font("Arial", Font.BOLD, 14*CALENDAR_SCALE));
 		dayOfWeekPanel.add(sunLabel);
-		
+				
 		monLabel = new JLabel("MON");
 		monLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		monLabel.setFont(new Font("Arial", Font.BOLD, 14*CALENDAR_SCALE));
 		dayOfWeekPanel.add(monLabel);
-		
+				
 		tueLabel = new JLabel("TUE");
 		tueLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		tueLabel.setFont(new Font("Arial", Font.BOLD, 14*CALENDAR_SCALE));
 		dayOfWeekPanel.add(tueLabel);
-		
+				
 		wedLabel = new JLabel("WED");
 		wedLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		wedLabel.setFont(new Font("Arial", Font.BOLD, 14*CALENDAR_SCALE));
 		dayOfWeekPanel.add(wedLabel);
-		
+				
 		thuLabel = new JLabel("THU");
 		thuLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		thuLabel.setFont(new Font("Arial", Font.BOLD, 14*CALENDAR_SCALE));
 		dayOfWeekPanel.add(thuLabel);
-		
+				
 		friLabel = new JLabel("FRI");
 		friLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		friLabel.setFont(new Font("Arial", Font.BOLD, 14*CALENDAR_SCALE));
 		dayOfWeekPanel.add(friLabel);
-		
+				
 		satLabel = new JLabel("SAT");
 		satLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		satLabel.setFont(new Font("Arial", Font.BOLD, 14*CALENDAR_SCALE));
 		dayOfWeekPanel.add(satLabel);
-		
+				
 		separator = new JSeparator();
 		separator.setForeground(new Color(0, 0, 0));
 		calendarPanel.add(separator);
-		
+				
 		// Date
-		
 		datePanel = new JPanel();
 		calendarPanel.add(datePanel);
 		datePanel.setLayout(new GridLayout(5, 7));
 		
-		int currentDate = 0;
-		int padding = 50;
-		for (int i = 0; i < 5; i++)
+		int firstDayOfWeek = getDayOfWeek(currentYear, currentMonthNum, 1); // day of week of 1st of current month and year
+		int lastDayOfWeek = getDayOfWeek(currentYear, currentMonthNum, YearMonth.of(currentYear, currentMonthNum).lengthOfMonth());
+		
+		// last month
+		for (int i = 1; i < firstDayOfWeek; i++)
 		{
-			for (int j = 0; j < 7; j++)
+			createDateBox(0, CALENDAR_SCALE, i, 1);
+		}
+		
+		// current month
+		int currentDayNum = 1;
+		boolean isThisMonth = false; // determine if the current date is still in the current month
+		
+		for (int i = 1; i <= 5; i++)
+		{
+			int startDayOfWeek = 1;
+			int endDayOfWeek = 7;
+			if (i == 1)
 			{
-				JPanel dateBox = new JPanel();
-				dateBox.setLayout(new BoxLayout(dateBox, BoxLayout.Y_AXIS));
-				
-				// date label
-				JLabel dateLabel = new JLabel(String.valueOf(currentDate));
-				dateLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-				dateLabel.setAlignmentY(Component.TOP_ALIGNMENT);
-				dateLabel.setFont(new Font("Arial", Font.PLAIN, 12*CALENDAR_SCALE));
-				dateBox.add(dateLabel);
-				
-				// bottom padding
-				dateBox.add(Box.createVerticalStrut(padding));
-				
-				int bottomBorder = 0;
-				int rightBorder = 0;
-				
-				if (i < 4)
-				{
-					// not last row
-					bottomBorder = 1;
-				}
-				
-				if (j < 6)
-				{
-					// not last column
-					rightBorder = 1;
-				}
-				
-				// add border
-				dateBox.setBorder(BorderFactory.createMatteBorder(0, 0, bottomBorder, rightBorder, Color.BLACK));
-				
-				
-				datePanel.add(dateBox);
-				currentDate++;
+				startDayOfWeek = firstDayOfWeek;
+			}
+			if (i == 5)
+			{
+				endDayOfWeek = lastDayOfWeek;
+			}
+			for (int j = startDayOfWeek; j <= endDayOfWeek; j++)
+			{
+				createDateBox(currentDayNum, CALENDAR_SCALE, i, j);
+				currentDayNum++;
 			}
 		}
 		
+		// next month
+		for (int j = lastDayOfWeek + 1; j <= 7; j++)
+		{
+			createDateBox(0, CALENDAR_SCALE, 5, j);
+		}
+	}
+	
+	private void createDateBox(int currentDayNum, int CALENDAR_SCALE, int i, int j)
+	{
+		int padding = 50;
 		
-		tabSelectPane.addTab("Activities", null, activitiesPanel, "Go go activities page");
-		
-		
-		
+		JPanel dateBox = new JPanel();
+		dateBox.setLayout(new BoxLayout(dateBox, BoxLayout.Y_AXIS));
+				
+		// date label
+		JLabel dateLabel = new JLabel(String.valueOf(currentDayNum));
+		dateLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+		dateLabel.setAlignmentY(Component.TOP_ALIGNMENT);
+		dateLabel.setFont(new Font("Arial", Font.PLAIN, 12*CALENDAR_SCALE));
+		dateBox.add(dateLabel);
+				
+		// bottom padding
+		dateBox.add(Box.createVerticalStrut(padding));
+				
+		int bottomBorder = 0;
+		int rightBorder = 0;
+				
+		if (i < 5)
+		{
+			// not last row
+			bottomBorder = 1;
+		}
+				
+		if (j < 7)
+		{
+			// not last column
+			rightBorder = 1;
+		}
+				
+		// add border
+		dateBox.setBorder(BorderFactory.createMatteBorder(0, 0, bottomBorder, rightBorder, Color.BLACK));
+				
+				
+		datePanel.add(dateBox);
+	}
+	
+	private int convertDayOfWeek(int dayOfWeek)
+	{
+		// convert from MON - SUN to SUN - SAT
+		return (dayOfWeek % 7) + 1;
+	}
+	
+	private int getDayOfWeek(int year, int month, int dateNum)
+	{
+		LocalDate date = LocalDate.of(year, month, dateNum);
+		int dayOfWeek = date.getDayOfWeek().getValue(); // day of week of 1st of current month and year
+		dayOfWeek = convertDayOfWeek(dayOfWeek);
+		return dayOfWeek;
 	}
 
 }
