@@ -12,6 +12,7 @@ import javax.swing.JLabel;
 import java.awt.Font;
 import javax.swing.SwingConstants;
 import javax.swing.JTextField;
+import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -21,6 +22,13 @@ import javax.swing.JScrollBar;
 import javax.swing.JComboBox;
 import javax.swing.JTabbedPane;
 import java.awt.FlowLayout;
+import java.awt.GridBagLayout;
+import java.awt.GridLayout;
+import java.awt.GridBagConstraints;
+import java.awt.Insets;
+import javax.swing.JSeparator;
+import java.awt.Color;
+import java.awt.Component;
 
 public class MainWindow extends JFrame {
 	
@@ -36,9 +44,24 @@ public class MainWindow extends JFrame {
 	private JLabel someFilterLabel;
 	private JTabbedPane tabSelectPane;
 	private JPanel calendarPanel;
-	private JLabel calendarLabel;
 	private JPanel activitiesPanel;
 	private JLabel activitiesLabel;
+	private JPanel monthYearPanel;
+	private JLabel monthLabel;
+	private JButton prevMonthButton;
+	private JButton nextMonthButton;
+	private JTextField yearTextField;
+	private JPanel monthPanel;
+	private JPanel dayOfWeekPanel;
+	private JLabel sunLabel;
+	private JLabel monLabel;
+	private JLabel tueLabel;
+	private JLabel wedLabel;
+	private JLabel thuLabel;
+	private JLabel friLabel;
+	private JLabel satLabel;
+	private JPanel datePanel;
+	private JSeparator separator;
 
 	/**
 	 * Launch the application.
@@ -75,7 +98,7 @@ public class MainWindow extends JFrame {
 		
 		titleLabel = new JLabel(APP_NAME);
 		titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
-		titleLabel.setFont(new Font("Arial", Font.PLAIN, 28));
+		titleLabel.setFont(new Font("Arial", Font.PLAIN, 42));
 		titlePanel.add(titleLabel);
 		
 		// Search
@@ -87,6 +110,7 @@ public class MainWindow extends JFrame {
 		seachTextField.setColumns(50);
 		
 		searchButton = new JButton("Search");
+		searchButton.setFont(new Font("Arial", Font.PLAIN, 18));
 		searchPanel.add(searchButton);
 		
 		// Filter
@@ -94,6 +118,7 @@ public class MainWindow extends JFrame {
 		contentPane.add(filterPanel);
 		
 		someFilterLabel = new JLabel("Some Filter");
+		someFilterLabel.setFont(new Font("Arial", Font.PLAIN, 16));
 		filterPanel.add(someFilterLabel);
 		
 		someFilterComboBox = new JComboBox();
@@ -104,13 +129,8 @@ public class MainWindow extends JFrame {
 		contentPane.add(tabSelectPane);
 		
 		// Calendar
+		final int CALENDAR_SCALE = 2; // make everything bigger, so that the calendar takes more space
 		calendarPanel = new JPanel();
-		calendarPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
-		
-		calendarLabel = new JLabel("This is calendar page");
-		calendarLabel.setHorizontalAlignment(SwingConstants.CENTER);
-		calendarPanel.add(calendarLabel);
-		calendarPanel.add(Box.createRigidArea(new Dimension(1280, 450)));
 		
 		// Activities
 		activitiesPanel = new JPanel();
@@ -119,10 +139,161 @@ public class MainWindow extends JFrame {
 		activitiesPanel.add(activitiesLabel);
 		
 		// Tab
+		tabSelectPane.setFont(new Font("Arial", Font.PLAIN, 18));
 		tabSelectPane.addTab("Calendar", null, calendarPanel, "Go go calendar page");
+		calendarPanel.setLayout(new BoxLayout(calendarPanel, BoxLayout.Y_AXIS));
+		
+		// Month Year
+		monthYearPanel = new JPanel();
+		calendarPanel.add(monthYearPanel);
+		monthYearPanel.setLayout(new GridBagLayout());
+		
+		JLabel emptyLabel = new JLabel("0000");
+		emptyLabel.setFont(new Font("Arial", Font.BOLD, 18*CALENDAR_SCALE)); // make it as big as the year, so that we can center the month
+		emptyLabel.setForeground(new Color(0, 0, 0, 0));
+		GridBagConstraints gbc_space = new GridBagConstraints();
+		gbc_space.gridx = 0;
+		gbc_space.weightx = 1;
+		gbc_space.fill = GridBagConstraints.HORIZONTAL;
+		monthYearPanel.add(emptyLabel, gbc_space);
+		
+		monthPanel = new JPanel();
+		
+		prevMonthButton = new JButton("prev");
+		prevMonthButton.setVerticalAlignment(SwingConstants.TOP);
+		prevMonthButton.setFont(new Font("Arial", Font.BOLD, 12*CALENDAR_SCALE));
+		monthPanel.add(prevMonthButton);
+		
+		monthLabel = new JLabel("May");
+		monthLabel.setVerticalAlignment(SwingConstants.TOP);
+		monthLabel.setFont(new Font("Arial", Font.BOLD, 21*CALENDAR_SCALE));
+		monthPanel.add(monthLabel);
+		
+		nextMonthButton = new JButton("next");
+		nextMonthButton.setVerticalAlignment(SwingConstants.TOP);
+		nextMonthButton.setFont(new Font("Arial", Font.BOLD, 12*CALENDAR_SCALE));
+		monthPanel.add(nextMonthButton);
+		
+		GridBagConstraints gbc_monthPanel = new GridBagConstraints();
+		gbc_monthPanel.gridx = 1;
+		gbc_monthPanel.weightx = 0;
+		gbc_monthPanel.fill = GridBagConstraints.NONE;
+		monthYearPanel.add(monthPanel, gbc_monthPanel);
+		
+		yearTextField = new JTextField();
+		yearTextField.setHorizontalAlignment(SwingConstants.TRAILING);
+		yearTextField.setFont(new Font("Arial", Font.BOLD, 18*CALENDAR_SCALE));
+		yearTextField.setText("2026");
+		yearTextField.setOpaque(false);
+		yearTextField.setBorder(null);
+		yearTextField.setColumns(5);
+		
+		GridBagConstraints gbc_yearTextField = new GridBagConstraints();
+		gbc_yearTextField.fill = GridBagConstraints.HORIZONTAL;
+		gbc_yearTextField.anchor = GridBagConstraints.EAST;
+		gbc_yearTextField.gridx = 2;
+		gbc_yearTextField.weightx = 1;
+		monthYearPanel.add(yearTextField, gbc_yearTextField);
+		
+		// Day of Week
+		int dateHGap = 10;
+		int dateVGap = 50;
+		
+		dayOfWeekPanel = new JPanel(new GridLayout(1, 7, dateHGap, dateVGap));
+		calendarPanel.add(dayOfWeekPanel);
+		
+		sunLabel = new JLabel("SUN");
+		sunLabel.setHorizontalAlignment(SwingConstants.CENTER);
+		sunLabel.setFont(new Font("Arial", Font.BOLD, 14*CALENDAR_SCALE));
+		dayOfWeekPanel.add(sunLabel);
+		
+		monLabel = new JLabel("MON");
+		monLabel.setHorizontalAlignment(SwingConstants.CENTER);
+		monLabel.setFont(new Font("Arial", Font.BOLD, 14*CALENDAR_SCALE));
+		dayOfWeekPanel.add(monLabel);
+		
+		tueLabel = new JLabel("TUE");
+		tueLabel.setHorizontalAlignment(SwingConstants.CENTER);
+		tueLabel.setFont(new Font("Arial", Font.BOLD, 14*CALENDAR_SCALE));
+		dayOfWeekPanel.add(tueLabel);
+		
+		wedLabel = new JLabel("WED");
+		wedLabel.setHorizontalAlignment(SwingConstants.CENTER);
+		wedLabel.setFont(new Font("Arial", Font.BOLD, 14*CALENDAR_SCALE));
+		dayOfWeekPanel.add(wedLabel);
+		
+		thuLabel = new JLabel("THU");
+		thuLabel.setHorizontalAlignment(SwingConstants.CENTER);
+		thuLabel.setFont(new Font("Arial", Font.BOLD, 14*CALENDAR_SCALE));
+		dayOfWeekPanel.add(thuLabel);
+		
+		friLabel = new JLabel("FRI");
+		friLabel.setHorizontalAlignment(SwingConstants.CENTER);
+		friLabel.setFont(new Font("Arial", Font.BOLD, 14*CALENDAR_SCALE));
+		dayOfWeekPanel.add(friLabel);
+		
+		satLabel = new JLabel("SAT");
+		satLabel.setHorizontalAlignment(SwingConstants.CENTER);
+		satLabel.setFont(new Font("Arial", Font.BOLD, 14*CALENDAR_SCALE));
+		dayOfWeekPanel.add(satLabel);
+		
+		separator = new JSeparator();
+		separator.setForeground(new Color(0, 0, 0));
+		calendarPanel.add(separator);
+		
+		// Date
+		
+		datePanel = new JPanel();
+		calendarPanel.add(datePanel);
+		datePanel.setLayout(new GridLayout(5, 7));
+		
+		int currentDate = 0;
+		int padding = 50;
+		for (int i = 0; i < 5; i++)
+		{
+			for (int j = 0; j < 7; j++)
+			{
+				JPanel dateBox = new JPanel();
+				dateBox.setLayout(new BoxLayout(dateBox, BoxLayout.Y_AXIS));
+				
+				// date label
+				JLabel dateLabel = new JLabel(String.valueOf(currentDate));
+				dateLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+				dateLabel.setAlignmentY(Component.TOP_ALIGNMENT);
+				dateLabel.setFont(new Font("Arial", Font.PLAIN, 12*CALENDAR_SCALE));
+				dateBox.add(dateLabel);
+				
+				// bottom padding
+				dateBox.add(Box.createVerticalStrut(padding));
+				
+				int bottomBorder = 0;
+				int rightBorder = 0;
+				
+				if (i < 4)
+				{
+					// not last row
+					bottomBorder = 1;
+				}
+				
+				if (j < 6)
+				{
+					// not last column
+					rightBorder = 1;
+				}
+				
+				// add border
+				dateBox.setBorder(BorderFactory.createMatteBorder(0, 0, bottomBorder, rightBorder, Color.BLACK));
+				
+				
+				datePanel.add(dateBox);
+				currentDate++;
+			}
+		}
+		
+		
 		tabSelectPane.addTab("Activities", null, activitiesPanel, "Go go activities page");
 		
-		System.out.println("Commit Test");
+		
 		
 	}
 
