@@ -66,6 +66,11 @@ public class MainWindow extends JFrame {
 	private JLabel satLabel;
 	private JPanel datePanel;
 	private JSeparator separator;
+	
+	String[] monthName = new String[] { "None", "JAN", "FEB", "MAR", "APR", "MAY", "JUNE", "JULY", "AUG", "SEP",
+			"OCT", "NOV", "DEC", "None" };
+	private int currentYear, currentMonthNum;
+	final int CALENDAR_SCALE = 2; // make everything in calendar bigger, so that the calendar takes more space
 
 	/**
 	 * Launch the application.
@@ -149,13 +154,9 @@ public class MainWindow extends JFrame {
 
 	private void createCalendarTab() {
 		
-		final int CALENDAR_SCALE = 2; // make everything bigger, so that the calendar takes more space
-		
 		// Current Year and Month
-		String[] monthName = new String[] { "None", "JAN", "FEB", "MAR", "APR", "MAY", "JUNE", "JULY", "AUG", "SEP",
-				"OCT", "NOV", "DEC", "None" };
-		int currentYear = Year.now().getValue();
-		int currentMonthNum = LocalDate.now().getMonthValue();
+		currentYear = Year.now().getValue();
+		currentMonthNum = LocalDate.now().getMonthValue();
 		String currentMonth = monthName[currentMonthNum];
 		
 		// Calendar
@@ -172,7 +173,7 @@ public class MainWindow extends JFrame {
 		monthYearPanel.setLayout(new GridBagLayout());
 
 		JLabel emptyLabel = new JLabel("0000");
-		emptyLabel.setFont(new Font("Arial", Font.BOLD, 18 * CALENDAR_SCALE)); // make it as big as the year, so that we
+		emptyLabel.setFont(new Font("Arial", Font.BOLD, 16 * CALENDAR_SCALE)); // make it as big as the year, so that we
 																				// can center the month
 		emptyLabel.setForeground(new Color(0, 0, 0, 0));
 		GridBagConstraints gbc_space = new GridBagConstraints();
@@ -183,19 +184,25 @@ public class MainWindow extends JFrame {
 
 		monthPanel = new JPanel();
 
-		prevMonthButton = new JButton("prev");
+		prevMonthButton = new JButton("<");
 		prevMonthButton.setVerticalAlignment(SwingConstants.TOP);
-		prevMonthButton.setFont(new Font("Arial", Font.BOLD, 12 * CALENDAR_SCALE));
+		prevMonthButton.setFont(new Font("Arial", Font.BOLD, 10 * CALENDAR_SCALE));
+		prevMonthButton.addActionListener(e -> {
+			goToPrevMonth();
+		});
 		monthPanel.add(prevMonthButton);
 
 		monthLabel = new JLabel(currentMonth);
 		monthLabel.setVerticalAlignment(SwingConstants.TOP);
-		monthLabel.setFont(new Font("Arial", Font.BOLD, 21 * CALENDAR_SCALE));
+		monthLabel.setFont(new Font("Arial", Font.BOLD, 18 * CALENDAR_SCALE));
 		monthPanel.add(monthLabel);
 
-		nextMonthButton = new JButton("next");
+		nextMonthButton = new JButton(">");
 		nextMonthButton.setVerticalAlignment(SwingConstants.TOP);
-		nextMonthButton.setFont(new Font("Arial", Font.BOLD, 12 * CALENDAR_SCALE));
+		nextMonthButton.setFont(new Font("Arial", Font.BOLD, 10 * CALENDAR_SCALE));
+		nextMonthButton.addActionListener(e -> {
+			goToNextMonth();
+		});
 		monthPanel.add(nextMonthButton);
 
 		GridBagConstraints gbc_monthPanel = new GridBagConstraints();
@@ -206,7 +213,7 @@ public class MainWindow extends JFrame {
 
 		yearTextField = new JTextField();
 		yearTextField.setHorizontalAlignment(SwingConstants.TRAILING);
-		yearTextField.setFont(new Font("Arial", Font.BOLD, 18 * CALENDAR_SCALE));
+		yearTextField.setFont(new Font("Arial", Font.BOLD, 16 * CALENDAR_SCALE));
 		yearTextField.setText(String.valueOf(currentYear));
 		yearTextField.setOpaque(false);
 		yearTextField.setBorder(null);
@@ -228,59 +235,112 @@ public class MainWindow extends JFrame {
 
 		sunLabel = new JLabel("SUN");
 		sunLabel.setHorizontalAlignment(SwingConstants.CENTER);
-		sunLabel.setFont(new Font("Arial", Font.BOLD, 14 * CALENDAR_SCALE));
+		sunLabel.setFont(new Font("Arial", Font.BOLD, 12 * CALENDAR_SCALE));
 		dayOfWeekPanel.add(sunLabel);
 
 		monLabel = new JLabel("MON");
 		monLabel.setHorizontalAlignment(SwingConstants.CENTER);
-		monLabel.setFont(new Font("Arial", Font.BOLD, 14 * CALENDAR_SCALE));
+		monLabel.setFont(new Font("Arial", Font.BOLD, 12 * CALENDAR_SCALE));
 		dayOfWeekPanel.add(monLabel);
 
 		tueLabel = new JLabel("TUE");
 		tueLabel.setHorizontalAlignment(SwingConstants.CENTER);
-		tueLabel.setFont(new Font("Arial", Font.BOLD, 14 * CALENDAR_SCALE));
+		tueLabel.setFont(new Font("Arial", Font.BOLD, 12 * CALENDAR_SCALE));
 		dayOfWeekPanel.add(tueLabel);
 
 		wedLabel = new JLabel("WED");
 		wedLabel.setHorizontalAlignment(SwingConstants.CENTER);
-		wedLabel.setFont(new Font("Arial", Font.BOLD, 14 * CALENDAR_SCALE));
+		wedLabel.setFont(new Font("Arial", Font.BOLD, 12 * CALENDAR_SCALE));
 		dayOfWeekPanel.add(wedLabel);
 
 		thuLabel = new JLabel("THU");
 		thuLabel.setHorizontalAlignment(SwingConstants.CENTER);
-		thuLabel.setFont(new Font("Arial", Font.BOLD, 14 * CALENDAR_SCALE));
+		thuLabel.setFont(new Font("Arial", Font.BOLD, 12 * CALENDAR_SCALE));
 		dayOfWeekPanel.add(thuLabel);
 
 		friLabel = new JLabel("FRI");
 		friLabel.setHorizontalAlignment(SwingConstants.CENTER);
-		friLabel.setFont(new Font("Arial", Font.BOLD, 14 * CALENDAR_SCALE));
+		friLabel.setFont(new Font("Arial", Font.BOLD, 12 * CALENDAR_SCALE));
 		dayOfWeekPanel.add(friLabel);
 
 		satLabel = new JLabel("SAT");
 		satLabel.setHorizontalAlignment(SwingConstants.CENTER);
-		satLabel.setFont(new Font("Arial", Font.BOLD, 14 * CALENDAR_SCALE));
+		satLabel.setFont(new Font("Arial", Font.BOLD, 12 * CALENDAR_SCALE));
 		dayOfWeekPanel.add(satLabel);
 
 		separator = new JSeparator();
 		separator.setForeground(new Color(0, 0, 0));
 		calendarPanel.add(separator);
 		
-		
-		createDateOfMonthYear(currentYear, currentMonthNum, CALENDAR_SCALE);
-	}
-
-	private void createDateOfMonthYear(int year, int month, int CALENDAR_SCALE) {
-		// create date (e.g. 1st - 31th) on the window
-
-		// Date
 		datePanel = new JPanel();
 		calendarPanel.add(datePanel);
 		datePanel.setLayout(new GridLayout(5, 7));
-
+		
+		createDateOfMonthYear(currentYear, currentMonthNum);
+	}
+	
+	private void goToPrevMonth()
+	{
+		// update month
+		currentMonthNum -= 1;
+		
+		if (currentMonthNum == 0)
+		{
+			currentMonthNum = 12;
+			currentYear -= 1;
+		}
+		
+		// set month label
+		String currentMonthName = monthName[currentMonthNum];
+		monthLabel.setText(currentMonthName);
+		
+		// set year label
+		yearTextField.setText(String.valueOf(currentYear));
+		
+		// set date
+		createDateOfMonthYear(currentYear, currentMonthNum);
+	}
+	
+	private void goToNextMonth()
+	{
+		// update month
+		currentMonthNum += 1;
+		
+		if (currentMonthNum == 13)
+		{
+			currentMonthNum = 1;
+			currentYear += 1;
+		}
+		
+		// set month label
+		String currentMonthName = monthName[currentMonthNum];
+		monthLabel.setText(currentMonthName);
+		
+		// set year label
+		yearTextField.setText(String.valueOf(currentYear));
+		
+		// set date
+		createDateOfMonthYear(currentYear, currentMonthNum);
+	}
+	
+	private void createDateOfMonthYear(int year, int month) {
+		// create date (e.g. 1st - 31th) on the window
+		
+		datePanel.removeAll();
+		
+		// Date
 		int firstDayOfWeek = getDayOfWeek(year, month, 1); // day of week of 1st of current month and
 																			// year
 		int daysInMonth = YearMonth.of(year, month).lengthOfMonth();
 		int lastDayOfWeek = getDayOfWeek(year, month, daysInMonth);
+		
+		// determine whether date needs 5 or 6 rows
+		int rows = 5;
+		int totalCells = (firstDayOfWeek - 1) + daysInMonth;
+		if (totalCells > 35)
+			rows = 6;
+		datePanel.setLayout(new GridLayout(rows, 7));
+		
 		
 		// get last month info
 		int lastMonth = month - 1;
@@ -294,43 +354,41 @@ public class MainWindow extends JFrame {
 		
 		int lastMonthDaysLength = YearMonth.of(lastMonthYear, lastMonth).lengthOfMonth();
 		
-		// last month date
-		int currentLastDateNum = lastMonthDaysLength - (firstDayOfWeek - 2);
-		for (int i = 1; i < firstDayOfWeek; i++) {
-			createDateBox(currentLastDateNum, CALENDAR_SCALE, i, 1, Color.GRAY);
-			currentLastDateNum++;
-		}
 
 		// current month date
+		int currentLastDateNum = lastMonthDaysLength - (firstDayOfWeek - 2);
 		int currentDayNum = 1;
-		boolean isThisMonth = false; // determine if the current date is still in the current month
-
-		for (int i = 1; i <= 5; i++) {
-			int startDayOfWeek = 1;
-			int endDayOfWeek = 7;
-			if (i == 1) {
-				startDayOfWeek = firstDayOfWeek;
+		int currentNextDateNum = 1;
+		
+		totalCells = 7 * rows;
+		for (int cell = 0; cell < totalCells; cell++) {
+			int i = cell / 7 + 1;
+			int j = cell % 7 + 1;
+			
+			if (currentLastDateNum <= lastMonthDaysLength)
+			{
+				// last month date
+				createDateBox(currentLastDateNum, CALENDAR_SCALE, rows, i, j, Color.GRAY);
+				currentLastDateNum++;
 			}
 			
-			for (int j = startDayOfWeek; j <= endDayOfWeek; j++) {
-				createDateBox(currentDayNum, CALENDAR_SCALE, i, j, Color.BLACK);
+			else if (currentDayNum <= daysInMonth) {
+				// current month date
+				createDateBox(currentDayNum, CALENDAR_SCALE, rows, i, j, Color.BLACK);
 				currentDayNum++;
-				
-				if (currentDayNum > daysInMonth)
-					break;
+			}
+			
+			else {
+				// next month date
+				createDateBox(currentNextDateNum, CALENDAR_SCALE, rows, i, j, Color.GRAY);
+				currentNextDateNum++;
 			}
 		}
-
-		// next month date
-		int currentNextDateNum = 1;
-		for (int j = lastDayOfWeek + 1; j <= 7; j++) {
-			createDateBox(currentNextDateNum, CALENDAR_SCALE, 5, j, Color.GRAY);
-			currentNextDateNum++;
-		}
+		
 	}
 
-	private void createDateBox(int currentDayNum, int CALENDAR_SCALE, int i, int j, Color color) {
-		int padding = 50;
+	private void createDateBox(int currentDayNum, int CALENDAR_SCALE, int rows, int i, int j, Color color) {
+		int padding = 45;
 
 		JPanel dateBox = new JPanel();
 		dateBox.setLayout(new BoxLayout(dateBox, BoxLayout.Y_AXIS));
@@ -339,7 +397,7 @@ public class MainWindow extends JFrame {
 		JLabel dateLabel = new JLabel(String.valueOf(currentDayNum));
 		dateLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 		dateLabel.setAlignmentY(Component.TOP_ALIGNMENT);
-		dateLabel.setFont(new Font("Arial", Font.PLAIN, 12 * CALENDAR_SCALE));
+		dateLabel.setFont(new Font("Arial", Font.PLAIN, 10 * CALENDAR_SCALE));
 		dateLabel.setForeground(color);
 		dateBox.add(dateLabel);
 
@@ -349,7 +407,7 @@ public class MainWindow extends JFrame {
 		int bottomBorder = 0;
 		int rightBorder = 0;
 
-		if (i < 5) {
+		if (i < rows) {
 			// not last row
 			bottomBorder = 1;
 		}
