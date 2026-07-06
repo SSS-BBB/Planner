@@ -66,6 +66,8 @@ public class MainWindow extends JFrame {
 	private JLabel satLabel;
 	private JPanel datePanel;
 	private JSeparator separator;
+	private JPanel yearPanel;
+	private JButton changeYearButton;
 	
 	String[] monthName = new String[] { "None", "JAN", "FEB", "MAR", "APR", "MAY", "JUNE", "JULY", "AUG", "SEP",
 			"OCT", "NOV", "DEC", "None" };
@@ -170,8 +172,9 @@ public class MainWindow extends JFrame {
 		// Month Year
 		monthYearPanel = new JPanel();
 		calendarPanel.add(monthYearPanel);
-		monthYearPanel.setLayout(new GridBagLayout());
-
+		monthYearPanel.setLayout(new GridLayout(1, 3));
+		
+		/*
 		JLabel emptyLabel = new JLabel("0000");
 		emptyLabel.setFont(new Font("Arial", Font.BOLD, 16 * CALENDAR_SCALE)); // make it as big as the year, so that we
 																				// can center the month
@@ -180,7 +183,8 @@ public class MainWindow extends JFrame {
 		gbc_space.gridx = 0;
 		gbc_space.weightx = 1;
 		gbc_space.fill = GridBagConstraints.HORIZONTAL;
-		monthYearPanel.add(emptyLabel, gbc_space);
+		*/
+		monthYearPanel.add(Box.createHorizontalGlue());
 
 		monthPanel = new JPanel();
 
@@ -204,13 +208,18 @@ public class MainWindow extends JFrame {
 			goToNextMonth();
 		});
 		monthPanel.add(nextMonthButton);
-
+		
+		/*
 		GridBagConstraints gbc_monthPanel = new GridBagConstraints();
 		gbc_monthPanel.gridx = 1;
 		gbc_monthPanel.weightx = 0;
 		gbc_monthPanel.fill = GridBagConstraints.NONE;
-		monthYearPanel.add(monthPanel, gbc_monthPanel);
-
+		*/
+		monthYearPanel.add(monthPanel);
+		
+		yearPanel = new JPanel();
+		yearPanel.setLayout(new BoxLayout(yearPanel, BoxLayout.Y_AXIS));
+		
 		yearTextField = new JTextField();
 		yearTextField.setHorizontalAlignment(SwingConstants.TRAILING);
 		yearTextField.setFont(new Font("Arial", Font.BOLD, 16 * CALENDAR_SCALE));
@@ -218,13 +227,24 @@ public class MainWindow extends JFrame {
 		yearTextField.setOpaque(false);
 		yearTextField.setBorder(null);
 		yearTextField.setColumns(5);
-
+		yearPanel.add(yearTextField);
+		
+		changeYearButton = new JButton("Change Year");
+		changeYearButton.setFont(new Font("Arial", Font.BOLD, 8 * CALENDAR_SCALE));
+		changeYearButton.setAlignmentX(Component.RIGHT_ALIGNMENT);
+		changeYearButton.addActionListener(e -> {
+			changeYear();
+		});
+		yearPanel.add(changeYearButton);
+		
+		/*
 		GridBagConstraints gbc_yearTextField = new GridBagConstraints();
 		gbc_yearTextField.fill = GridBagConstraints.HORIZONTAL;
 		gbc_yearTextField.anchor = GridBagConstraints.EAST;
 		gbc_yearTextField.gridx = 2;
 		gbc_yearTextField.weightx = 1;
-		monthYearPanel.add(yearTextField, gbc_yearTextField);
+		*/
+		monthYearPanel.add(yearPanel);
 
 		// Day of Week
 		int dateHGap = 10;
@@ -279,6 +299,16 @@ public class MainWindow extends JFrame {
 		createDateOfMonthYear(currentYear, currentMonthNum);
 	}
 	
+	private void refreshCalendar() {
+		String currentMonthName = monthName[currentMonthNum];
+	    monthLabel.setText(currentMonthName);
+	    yearTextField.setText(String.valueOf(currentYear));
+	    createDateOfMonthYear(currentYear, currentMonthNum);
+	    
+	    datePanel.revalidate();
+	    datePanel.repaint();
+	}
+	
 	private void goToPrevMonth()
 	{
 		// update month
@@ -290,15 +320,10 @@ public class MainWindow extends JFrame {
 			currentYear -= 1;
 		}
 		
-		// set month label
-		String currentMonthName = monthName[currentMonthNum];
-		monthLabel.setText(currentMonthName);
+		if (currentYear <= 0)
+			currentYear = 9999;
 		
-		// set year label
-		yearTextField.setText(String.valueOf(currentYear));
-		
-		// set date
-		createDateOfMonthYear(currentYear, currentMonthNum);
+		refreshCalendar();
 	}
 	
 	private void goToNextMonth()
@@ -312,19 +337,38 @@ public class MainWindow extends JFrame {
 			currentYear += 1;
 		}
 		
-		// set month label
-		String currentMonthName = monthName[currentMonthNum];
-		monthLabel.setText(currentMonthName);
+		if (currentYear > 9999)
+			currentYear = 1;
 		
-		// set year label
-		yearTextField.setText(String.valueOf(currentYear));
+		refreshCalendar();
+	}
+	
+	private void changeYear() {
+		String yearStr = yearTextField.getText();
+		if (yearStr == null || yearStr.isEmpty())
+		{
+			yearTextField.setText(String.valueOf(currentYear));
+			return;
+		}
 		
-		// set date
-		createDateOfMonthYear(currentYear, currentMonthNum);
+		try {
+			currentYear = Integer.parseInt(yearStr);
+			
+			if (currentYear <= 0 || currentYear > 9999) {
+				currentYear = Year.now().getValue();
+			}
+			
+			refreshCalendar();
+		}
+		catch (NumberFormatException e) {
+			yearTextField.setText(String.valueOf(currentYear));
+			return;
+		}
 	}
 	
 	private void createDateOfMonthYear(int year, int month) {
 		// create date (e.g. 1st - 31th) on the window
+		// System.out.println("Creating calendar for " + month + "/" + year);
 		
 		datePanel.removeAll();
 		
